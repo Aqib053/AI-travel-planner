@@ -1,0 +1,73 @@
+async def get_ai_recommendation(data_type, formatted_data):
+    logger.info(f"Getting {data_type} analysis from AI")
+    llm_model = initialize_llm()
+
+    # Configure agent based on data type
+    if data_type == "flights":
+        role = "AI Flight Analyst"
+        goal = "Analyze flight options and recommend the best one considering price, duration, stops, and overall convenience."
+        backstory = f"AI expert that provides in-depth analysis comparing flight options based on multiple factors."
+        description = """
+        Recommend the best flight from the available options, based on the details provided below:
+
+        **Reasoning for Recommendation:**
+        - **Price:** Provide a detailed explanation about why this flight offers the best value compared to others.
+        - **Duration:** Explain why this flight has the best duration in comparison to others.
+        - **Stops:** Discuss why this flight has minimal or optimal stops.
+        - **Travel Class:** Describe why this flight provides the best comfort and amenities.
+
+        Use the provided flight data as the basis for your recommendation. Be sure to justify your choice using clear reasoning for each attribute. Do not repeat the flight details in your response.
+        """
+    elif data_type == "hotels":
+        role = "AI Hotel Analyst"
+        goal = "Analyze hotel options and recommend the best one considering price, rating, location, and amenities."
+        backstory = f"AI expert that provides in-depth analysis comparing hotel options based on multiple factors."
+        description = """
+        Based on the following analysis, generate a detailed recommendation for the best hotel. Your response should include clear reasoning based on price, rating, location, and amenities.
+
+        **AI Hotel Recommendation**
+        We recommend the best hotel based on the following analysis:
+
+        **Reasoning for Recommendation**:
+        - **Price:** The recommended hotel is the best option for the price compared to others, offering the best value for the amenities and services provided.
+        - **Rating:** With a higher rating compared to the alternatives, it ensures a better overall guest experience. Explain why this makes it the best choice.
+        - **Location:** The hotel is in a prime location, close to important attractions, making it convenient for travelers.
+        - **Amenities:** The hotel offers amenities like Wi-Fi, pool, fitness center, free breakfast, etc. Discuss how these amenities enhance the experience, making it suitable for different types of travelers.
+
+        **Reasoning Requirements**:
+        - Ensure that each section clearly explains why this hotel is the best option based on the factors of price, rating, location, and amenities.
+        - Compare it against the other options and explain why this one stands out.
+        - Provide concise, well-structured reasoning to make the recommendation clear to the traveler.
+        - Your recommendation should help a traveler make an informed decision based on multiple factors, not just one.
+        """
+    else:
+        raise ValueError("Invalid data type for AI recommendation")
+
+    # Create the agent and task
+    analyze_agent = Agent(
+        role=role,
+        goal=goal,
+        backstory=backstory,
+        llm=llm_model,
+        verbose=False
+    )
+
+    analyze_task = Task(
+        description=f"{description}\n\nData to analyze:\n{formatted_data}",
+        agent=analyze_agent,
+        expected_output=f"A structured recommendation explaining the best {data_type} choice based on the analysis of provided details."
+    )
+
+    # Define CrewAI Workflow for the agent
+    analyst_crew = Crew(
+        agents=[analyze_agent],
+        tasks=[analyze_task],
+        process=Process.sequential,
+        verbose=False
+    )
+
+    # Execute CrewAI Process
+    crew_results = await asyncio.to_thread(analyst_crew.kickoff)
+    return str(crew_results)
+
+
