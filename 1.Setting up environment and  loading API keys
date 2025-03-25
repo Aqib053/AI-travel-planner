@@ -1,0 +1,19 @@
+import os
+import uvicorn
+import asyncio
+import logging
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+from serpapi import GoogleSearch
+from crewai import Agent, Task, Crew, Process, LLM
+from datetime import datetime
+from functools import lru_cache
+
+# Load API Keys
+GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY", "gemini_api_key_here")
+SERP_API_KEY = os.getenv("SERPER_API_KEY", "serpapi_key_here")
+
+# Initialize Logger
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
