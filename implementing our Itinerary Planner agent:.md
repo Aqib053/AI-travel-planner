@@ -1,3 +1,4 @@
+```python
 async def generate_itinerary(destination, flights_text, hotels_text, check_in_date, check_out_date):
     """Generate a detailed travel itinerary based on flight and hotel information."""
     try:
@@ -50,12 +51,16 @@ async def generate_itinerary(destination, flights_text, hotels_text, check_in_da
             agent=analyze_agent,
             expected_output="A well-structured, visually appealing itinerary in markdown format, including flight, hotel, and day-wise breakdown with emojis, headers, and bullet points."
         )
-itinerary_planner_crew = Crew(
+
+        itinerary_planner_crew = Crew(
             agents=[analyze_agent],
             tasks=[analyze_task],
             process=Process.sequential,
             verbose=False
         )
 
-crew_results = await asyncio.to_thread(itinerary_planner_crew.kickoff)
-return str(crew_results)
+        crew_results = await asyncio.to_thread(itinerary_planner_crew.kickoff)
+        return str(crew_results)
+    except Exception as e:
+        logger.exception(f"Error generating itinerary: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating itinerary: {str(e)}")
