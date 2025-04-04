@@ -1,3 +1,4 @@
+```python
 @app.post("/search_hotels/", response_model=AIResponse)
 async def get_hotel_recommendations(hotel_request: HotelRequest):
     hotels = await search_hotels(hotel_request)
