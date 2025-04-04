@@ -1,4 +1,4 @@
-
+```python
 # Run FastAPI Server
 if __name__ == "__main__":
     logger.info("Starting Travel Planning API server")
