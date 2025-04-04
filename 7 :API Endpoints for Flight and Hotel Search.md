@@ -1,3 +1,7 @@
+```python
+from fastapi import FastAPI
+from pydantic import BaseModel
+
 @app.post("/search_flights/", response_model=AIResponse)
 async def get_flight_recommendations(flight_request: FlightRequest):
     flights = await search_flights(flight_request)
