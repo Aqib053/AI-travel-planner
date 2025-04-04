@@ -1,3 +1,4 @@
+```python
 @app.post("/generate_itinerary/", response_model=AIResponse)
 async def get_itinerary(itinerary_request: ItineraryRequest):
     itinerary = await generate_itinerary(
